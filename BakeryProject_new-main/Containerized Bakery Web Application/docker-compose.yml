@@ -1,30 +1,19 @@
 version: '3.8'
 
 services:
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: bakery_db
-      MYSQL_USER: bakery_user
-      MYSQL_PASSWORD: bakery_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   backend:
     build:
       context: ./backend-java
       dockerfile: Dockerfile
     environment:
-      DB_URL: jdbc:mysql://db:3306/bakery_db
-      DB_USER: bakery_user
-      DB_PASS: bakery_password
+      # REPLACE 'your-rds-endpoint' with the actual endpoint from AWS RDS Console
+      # Example: bakery-db.cxyz123.us-east-1.rds.amazonaws.com
+      DB_URL: jdbc:mysql://bakery-db-instance.crm022wwqd6k.ca-central-1.rds.amazonaws.com:3306/bakery_db
+      DB_USER: admin
+      DB_PASS: admin123
     ports:
       - "8080:8080"
-    depends_on:
-      - db
+    # We REMOVED 'depends_on: db' because RDS is external, not a container.
 
   frontend:
     build:
@@ -34,6 +23,3 @@ services:
       - "80:80"
     depends_on:
       - backend
-
-volumes:
-  mysql_data:
