@@ -8,11 +8,11 @@ services:
     environment:
       # REPLACE 'your-rds-endpoint' with the actual endpoint from AWS RDS Console
       # Example: bakery-db.cxyz123.us-east-1.rds.amazonaws.com
-      DB_URL: jdbc:mysql://bakery-db-instance.crm022wwqd6k.ca-central-1.rds.amazonaws.com:3306/bakery_db
+      DB_URL: jdbc:mysql://database-1.c5sqom0eklc3.eu-north-1.rds.amazonaws.com:3306/bakery_db
       DB_USER: admin
-      DB_PASS: admin123
+      DB_PASS: ganeshjadhav
     ports:
-      - "8080:8080"
+      - "8082:8082"
     # We REMOVED 'depends_on: db' because RDS is external, not a container.
 
   frontend:
