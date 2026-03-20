@@ -1,145 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Admin Dashboard - Bakery Website</title>
+    <title>Admin Dashboard - Pune Bakery</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="img/favicon.ico" rel="icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"> 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <style>
-        .nav-tabs .nav-link { color: #555; }
-        .nav-tabs .nav-link.active { color: #e51a4b; font-weight: bold; }
-        .product-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
-        .order-card { border-left: 5px solid #e51a4b; background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-radius: 4px; }
+        .product-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .order-card { border-left: 5px solid #e51a4b; background: #f9f9f9; padding: 15px; margin-bottom: 15px; }
     </style>
 </head>
-
 <body>
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0 shadow-sm">
         <a href="index.html" class="navbar-brand d-flex align-items-center">
-            <h1 class="m-0">Baker Admin</h1>
+            <h1 class="m-0 text-primary">Baker Admin</h1>
         </a>
-        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="#" class="nav-item nav-link active">Dashboard</a>
-                <a href="#" id="logoutBtn" class="nav-item nav-link">Logout</a>
-            </div>
+        <div class="ms-auto">
+            <button id="logoutBtn" class="btn btn-outline-primary">Logout</button>
         </div>
     </nav>
-    <!-- Navbar End -->
 
-    <div class="container-fluid py-5">
-        <div class="container">
-            <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button">Products Management</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button">Orders Management</button>
-                </li>
-            </ul>
+    <div class="container py-5">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#products">Products</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders">Orders</button></li>
+        </ul>
 
-            <div class="tab-content" id="adminTabContent">
-                <!-- Products Tab -->
-                <div class="tab-pane fade show active" id="products" role="tabpanel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Manage Products</h2>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
-                    </div>
-                    <div id="productsList" class="row">
-                        <!-- Products will be loaded here -->
-                    </div>
+        <div class="tab-content">
+            <!-- Products -->
+            <div class="tab-pane fade show active" id="products">
+                <div class="d-flex justify-content-between mb-4">
+                    <h3>Manage Products</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">Add Product</button>
                 </div>
+                <div id="productList" class="row"></div>
+            </div>
 
-                <!-- Orders Tab -->
-                <div class="tab-pane fade" id="orders" role="tabpanel">
-                    <h2>Recent Orders</h2>
-                    <div id="ordersList">
-                        <!-- Orders will be loaded here -->
-                    </div>
-                </div>
+            <!-- Orders -->
+            <div class="tab-pane fade" id="orders">
+                <h3>Customer Orders</h3>
+                <div id="orderList"></div>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1">
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Product Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <form id="productForm" class="modal-content">
+                <div class="modal-header"><h5>Product Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
-                    <form id="productForm">
-                        <input type="hidden" id="productId">
-                        <div class="mb-3">
-                            <label class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="pName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Price</label>
-                            <input type="number" step="0.01" class="form-control" id="pPrice" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Product Image</label>
-                            <input type="file" class="form-control" id="pImageFile" accept="image/*">
-                            <input type="hidden" id="pImageBase64">
-                            <div id="imagePreview" class="mt-2" style="display:none;">
-                                <img src="" id="pPreviewImg" style="height: 100px; border: 1px solid #ddd; border-radius: 4px;">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="pQuantity" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save Product</button>
-                    </form>
+                    <input type="hidden" id="pId">
+                    <div class="mb-3"><label>Name</label><input type="text" id="pName" class="form-control" required></div>
+                    <div class="mb-3"><label>Price (INR)</label><input type="number" id="pPrice" class="form-control" required></div>
+                    <div class="mb-3"><label>Quantity</label><input type="number" id="pQty" class="form-control" required></div>
+                    <div class="mb-3">
+                        <label>Image</label>
+                        <input type="file" id="pImageFile" class="form-control" accept="image/*">
+                        <input type="hidden" id="pImageBase64">
+                        <img id="pPreview" src="" style="max-height:100px; display:none;" class="mt-2">
+                    </div>
                 </div>
-            </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Save Product</button></div>
+            </form>
         </div>
     </div>
 
-    <!-- Order Update Modal -->
-    <div class="modal fade" id="updateOrderModal" tabindex="-1">
+    <!-- Order Status Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Order</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <form id="statusForm" class="modal-content">
+                <div class="modal-header"><h5>Update Order</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
-                    <form id="updateOrderForm">
-                        <input type="hidden" id="updateOrderId">
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="orderStatus">
-                                <option value="Pending">Pending</option>
-                                <option value="Accepted">Accepted</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Out for Delivery">Out for Delivery</option>
-                                <option value="Delivered">Delivered</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Message to User</label>
-                            <textarea class="form-control" id="orderMessage" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update Order</button>
-                    </form>
+                    <input type="hidden" id="oId">
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select id="oStatus" class="form-select">
+                            <option>Pending</option><option>Confirmed</option><option>Baking</option><option>Out for Delivery</option><option>Delivered</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label>Message to Customer</label><textarea id="oMsg" class="form-control"></textarea></div>
                 </div>
-            </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Status</button></div>
+            </form>
         </div>
     </div>
 
@@ -147,179 +94,98 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
-            if (localStorage.getItem('isAdmin') !== 'true') {
-                window.location.href = 'admin_login.html';
-            }
+            if (localStorage.getItem('isAdmin') !== 'true') window.location.href = 'admin_login.html';
+            $('#logoutBtn').click(() => { localStorage.clear(); window.location.href = 'admin_login.html'; });
 
-            $('#logoutBtn').click(function() {
-                localStorage.removeItem('isAdmin');
-                window.location.href = 'admin_login.html';
-            });
-
-            loadProducts();
-            loadOrders();
+            loadProducts(); loadOrders();
 
             function loadProducts() {
-                fetch('http://127.0.0.1:8080/api/admin/products')
-                    .then(res => res.json())
-                    .then(products => {
-                        let html = '';
-                        products.forEach(p => {
-                            html += `
-                                <div class="col-md-4">
-                                    <div class="product-card">
-                                        <img src="${p.image}" class="img-fluid mb-2" style="height: 150px; object-fit: cover; width: 100%;">
-                                        <h5>${p.name}</h5>
-                                        <p class="mb-1">Price: ₹${p.price}</p>
-                                        <p class="mb-2">Stock: ${p.quantity}</p>
-                                        <button class="btn btn-sm btn-info edit-p" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}" data-quantity="${p.quantity}">Edit</button>
-                                        <button class="btn btn-sm btn-danger delete-p" data-id="${p.id}">Delete</button>
-                                    </div>
-                                </div>`;
-                        });
-                        $('#productsList').html(html);
+                fetch('http://127.0.0.1:8080/api/products').then(r => r.json()).then(products => {
+                    let html = '';
+                    products.forEach(p => {
+                        html += `<div class="col-md-4"><div class="product-card">
+                            <img src="${p.image}" class="img-fluid mb-2" style="height:150px; object-fit:cover; width:100%;">
+                            <h5>${p.name}</h5><p>Price: ₹${p.price} | Qty: ${p.quantity}</p>
+                            <button class="btn btn-sm btn-info edit-p" data-p='${JSON.stringify(p)}'>Edit</button>
+                            <button class="btn btn-sm btn-danger del-p" data-id="${p.id}">Delete</button>
+                        </div></div>`;
                     });
+                    $('#productList').html(html);
+                });
             }
 
             function loadOrders() {
-                fetch('http://127.0.0.1:8080/api/admin/orders')
-                    .then(res => res.json())
-                    .then(orders => {
-                        let html = '';
-                        orders.forEach(o => {
-                            let itemsHtml = o.items.map(i => `<li>${i.name} x ${i.quantity} (₹${i.price * i.quantity})</li>`).join('');
-                            html += `
-                                <div class="order-card">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <h5>Order #${o.id} - Customer: ${o.name}</h5>
-                                            <p class="mb-1"><strong>Email:</strong> ${o.email}</p>
-                                            <p class="mb-1"><strong>Address:</strong> ${o.address || 'N/A'}</p>
-                                            <p class="mb-2"><strong>Ordered Items:</strong></p>
-                                            <ul>${itemsHtml}</ul>
-                                            <p class="mb-2"><strong>Total Amount:</strong> <span class="text-primary fw-bold">₹${o.total_cost || 0}</span></p>
-                                            <p class="mb-0"><strong>Status:</strong> <span class="badge bg-secondary">${o.status}</span></p>
-                                            <p class="text-muted small mt-2">Admin Note: ${o.message || 'None'}</p>
-                                        </div>
-                                        <div class="col-md-4 text-end">
-                                            <button class="btn btn-primary update-order-btn" data-id="${o.id}" data-status="${o.status}" data-message="${o.message}">Update Status</button>
-                                        </div>
-                                    </div>
-                                </div>`;
-                        });
-                        $('#ordersList').html(html || '<p>No orders found.</p>');
+                fetch('http://127.0.0.1:8080/api/admin/orders').then(r => r.json()).then(orders => {
+                    let html = '';
+                    orders.forEach(o => {
+                        let items = [];
+                        try {
+                            items = typeof o.items === 'string' ? JSON.parse(o.items) : o.items;
+                        } catch (e) {
+                            console.error("Error parsing items for order", o.id, e);
+                        }
+                        const itemsStr = Array.isArray(items) ? items.map(i => `${i.name} x ${i.quantity}`).join(', ') : 'No items';
+                        html += `<div class="order-card row">
+                            <div class="col-md-8">
+                                <h6>Order #${o.id} - ${o.customer_name}</h6>
+                                <p class="mb-1">Items: ${itemsStr} | Total: ₹${o.total_cost}</p>
+                                <p class="mb-0 small text-muted">Status: ${o.status} | Note: ${o.admin_message || 'None'}</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-primary btn-sm update-o" data-id="${o.id}" data-status="${o.status}" data-msg="${o.admin_message}">Update</button>
+                            </div>
+                        </div>`;
                     });
+                    $('#orderList').html(html || 'No orders yet.');
+                }).catch(err => {
+                    console.error("Error loading orders:", err);
+                    $('#orderList').html('<p class="text-danger">Error loading orders from server.</p>');
+                });
             }
 
-            // Handle File Selection and Base64 Conversion
-            $('#pImageFile').on('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const base64String = event.target.result;
-                        $('#pImageBase64').val(base64String);
-                        $('#pPreviewImg').attr('src', base64String);
-                        $('#imagePreview').show();
-                    };
-                    reader.readAsDataURL(file);
-                }
+            $('#pImageFile').change(function(e) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { $('#pImageBase64').val(ev.target.result); $('#pPreview').attr('src', ev.target.result).show(); };
+                reader.readAsDataURL(e.target.files[0]);
             });
 
-            // Product Form Submit
             $('#productForm').submit(function(e) {
                 e.preventDefault();
-                const id = $('#productId').val();
-                const imageBase64 = $('#pImageBase64').val();
-                
-                if (!imageBase64) {
-                    alert('Please select an image');
-                    return;
-                }
-
-                const product = {
-                    name: $('#pName').val(),
-                    price: $('#pPrice').val(),
-                    image: imageBase64,
-                    quantity: $('#pQuantity').val()
-                };
-
+                const id = $('#pId').val();
+                const data = { name: $('#pName').val(), price: $('#pPrice').val(), quantity: $('#pQty').val(), image: $('#pImageBase64').val() };
                 const method = id ? 'PUT' : 'POST';
-                if (id) product.id = id;
-
+                if (id) data.id = id;
                 fetch('http://127.0.0.1:8080/api/admin/products', {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(product)
-                }).then(() => {
-                    $('#addProductModal').modal('hide');
-                    $('#productForm')[0].reset();
-                    loadProducts();
-                });
+                    method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+                }).then(() => { $('#productModal').modal('hide'); loadProducts(); });
             });
 
-            // Reset form for new product
-            $('[data-bs-target="#addProductModal"]').click(function() {
-                $('#productId').val('');
-                $('#productForm')[0].reset();
-                $('#pImageBase64').val('');
-                $('#imagePreview').hide();
-                $('#pPreviewImg').attr('src', '');
-            });
-
-            // Edit Product
             $(document).on('click', '.edit-p', function() {
-                $('#productId').val($(this).data('id'));
-                $('#pName').val($(this).data('name'));
-                $('#pPrice').val($(this).data('price'));
-                $('#pImageBase64').val($(this).data('image'));
-                $('#pQuantity').val($(this).data('quantity'));
-                
-                // Show existing image preview
-                const existingImg = $(this).data('image');
-                if (existingImg) {
-                    $('#pPreviewImg').attr('src', existingImg);
-                    $('#imagePreview').show();
-                } else {
-                    $('#imagePreview').hide();
-                }
-                
-                $('#addProductModal').modal('show');
+                const p = $(this).data('p');
+                $('#pId').val(p.id); $('#pName').val(p.name); $('#pPrice').val(p.price); $('#pQty').val(p.quantity);
+                $('#pImageBase64').val(p.image); $('#pPreview').attr('src', p.image).show();
+                $('#productModal').modal('show');
             });
 
-            // Delete Product
-            $(document).on('click', '.delete-p', function() {
-                if (confirm('Are you sure?')) {
+            $(document).on('click', '.del-p', function() {
+                if(confirm('Delete product?')) {
                     fetch('http://127.0.0.1:8080/api/admin/products', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: $(this).data('id') })
+                        method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: $(this).data('id')})
                     }).then(() => loadProducts());
                 }
             });
 
-            // Update Order Status
-            $(document).on('click', '.update-order-btn', function() {
-                $('#updateOrderId').val($(this).data('id'));
-                $('#orderStatus').val($(this).data('status'));
-                $('#orderMessage').val($(this).data('message'));
-                $('#updateOrderModal').modal('show');
+            $(document).on('click', '.update-o', function() {
+                $('#oId').val($(this).data('id')); $('#oStatus').val($(this).data('status')); $('#oMsg').val($(this).data('msg'));
+                $('#statusModal').modal('show');
             });
 
-            $('#updateOrderForm').submit(function(e) {
+            $('#statusForm').submit(function(e) {
                 e.preventDefault();
                 fetch('http://127.0.0.1:8080/api/admin/orders', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: $('#updateOrderId').val(),
-                        status: $('#orderStatus').val(),
-                        message: $('#orderMessage').val()
-                    })
-                }).then(() => {
-                    $('#updateOrderModal').modal('hide');
-                    loadOrders();
-                });
+                    method: 'PUT', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id: $('#oId').val(), status: $('#oStatus').val(), message: $('#oMsg').val()})
+                }).then(() => { $('#statusModal').modal('hide'); loadOrders(); });
             });
         });
     </script>

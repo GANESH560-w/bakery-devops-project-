@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Pune Bakery - Our Products</title>
@@ -11,70 +10,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"> 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <style>
         .cart-badge { position: absolute; top: -5px; right: -10px; padding: 2px 6px; border-radius: 50%; background: #e51a4b; color: white; font-size: 10px; }
         .product-item img { height: 250px; object-fit: cover; }
+        .payment-qr { max-width: 200px; margin: 20px auto; display: block; border: 10px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
     </style>
 </head>
-
 <body>
-    <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
         <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
             <h1 class="text-primary m-0">Pune Bakery</h1>
         </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav mx-auto p-4 p-lg-0">
                 <a href="index.html" class="nav-item nav-link">Home</a>
-                <a href="about.html" class="nav-item nav-link">About</a>
                 <a href="product.html" class="nav-item nav-link active">Products</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
-                <a href="employee_login.html" id="loginLink" class="nav-item nav-link">Employee Login</a>
-                <a href="admin_login.html" class="nav-item nav-link">Admin</a>
-                <a href="#" id="logoutBtn" class="nav-item nav-link" style="display: none;">Logout</a>
+                <a href="employee_login.html" id="authLink" class="nav-item nav-link">Login / Register</a>
+                <span id="userNameDisplay" class="nav-item nav-link text-primary" style="display:none;"></span>
+                <a href="#" id="logoutBtn" class="nav-item nav-link" style="display:none;">Logout</a>
             </div>
             <div class="d-none d-lg-flex align-items-center">
                 <button type="button" class="btn btn-primary position-relative me-4" data-bs-toggle="modal" data-bs-target="#cartModal">
                     <i class="fa fa-shopping-cart"></i>
                     <span id="cartCount" class="cart-badge">0</span>
                 </button>
-                <div class="flex-shrink-0 btn-lg-square border border-light rounded-circle">
-                    <i class="fa fa-phone text-primary"></i>
-                </div>
-                <div class="ps-3">
-                    <small class="text-primary mb-0">Call Us</small>
-                    <p class="text-light fs-5 mb-0">+91 20 345 6789</p>
-                </div>
             </div>
         </div>
     </nav>
-    <!-- Navbar End -->
 
-    <!-- Page Header Start -->
-    <div class="container-fluid page-header py-6 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container-fluid page-header py-6">
         <div class="container text-center pt-5 pb-3">
             <h1 class="display-4 text-white animated slideInDown mb-3">Our Menu</h1>
         </div>
     </div>
-    <!-- Page Header End -->
 
-    <!-- Product Start -->
     <div class="container-xxl bg-light my-6 py-6 pt-0">
         <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-                <p class="text-primary text-uppercase mb-2">// Bakery Products</p>
-                <h1 class="display-6 mb-4">Explore Our Delicious Bakery Products</h1>
-            </div>
-            <div id="productsDisplay" class="row g-4">
-                <!-- Products will be loaded here -->
-            </div>
+            <div id="productsDisplay" class="row g-4 mt-5"></div>
         </div>
     </div>
 
@@ -87,68 +62,62 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="cartItems" class="text-dark">
-                        <!-- Cart items will be loaded here -->
-                    </div>
+                    <div id="cartItems" class="text-dark"></div>
                     <div id="cartTotal" class="text-end mt-3 fw-bold text-dark"></div>
                     <hr>
-                    <form id="orderForm" class="mt-4">
-                        <h6 class="text-dark">Place Your Order</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" id="custName" class="form-control" placeholder="Your Name" required>
+                    <div id="checkoutSection" style="display:none;">
+                        <form id="orderForm">
+                            <div class="row g-3">
+                                <div class="col-md-6"><input type="text" id="custName" class="form-control" placeholder="Name" required></div>
+                                <div class="col-md-6"><input type="email" id="custEmail" class="form-control" placeholder="Email" required></div>
+                                <div class="col-12"><textarea id="custAddress" class="form-control" placeholder="Address" required></textarea></div>
+                                <div class="col-12"><button type="submit" class="btn btn-primary w-100">Proceed to Payment</button></div>
                             </div>
-                            <div class="col-md-6">
-                                <input type="email" id="custEmail" class="form-control" placeholder="Your Email" required>
-                            </div>
-                            <div class="col-12">
-                                <textarea id="custAddress" class="form-control" rows="2" placeholder="Delivery Address" required></textarea>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary w-100">Place Order</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    <div id="paymentSection" style="display:none;" class="text-center">
+                        <h5 class="text-dark">Scan QR to Pay</h5>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PuneBakeryPayment" class="payment-qr">
+                        <p class="text-muted">Dummy Payment Gateway - Processing in <span id="timer">10</span>s...</p>
+                    </div>
+                    <div id="loginPrompt" class="text-center p-4" style="display:none;">
+                        <p class="text-dark">Please <a href="employee_login.html">Login</a> to place an order.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Order Status Section -->
+    <!-- Order Status -->
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="bg-white p-5 rounded shadow-sm">
-                    <h4 class="mb-4 text-center text-dark">Check Your Order Status</h4>
-                    <div class="input-group mb-3">
-                        <input type="email" id="checkEmail" class="form-control" placeholder="Enter your email to check orders">
-                        <button class="btn btn-primary" id="checkStatusBtn">Check Status</button>
-                    </div>
-                    <div id="orderStatusList" class="text-dark"></div>
-                </div>
+            <div class="col-lg-8 bg-white p-5 rounded shadow">
+                <h4 class="text-center text-dark">Track Your Orders</h4>
+                <div id="orderStatusList" class="mt-4 text-dark"></div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let cart = [];
-        
+        const user = JSON.parse(localStorage.getItem('user'));
+
         $(document).ready(function() {
-            // Check employee login
-            if (localStorage.getItem('isEmployee') !== 'true') {
-                window.location.href = 'employee_login.html';
-            } else {
+            if (user) {
+                $('#authLink').hide();
+                $('#userNameDisplay').text('Welcome, ' + user.username).show();
                 $('#logoutBtn').show();
-                $('#loginLink').hide();
+                $('#checkoutSection').show();
+                loadUserOrders();
+            } else {
+                $('#loginPrompt').show();
             }
 
             $('#logoutBtn').click(function() {
-                localStorage.removeItem('isEmployee');
-                localStorage.removeItem('empUser');
-                window.location.href = 'employee_login.html';
+                localStorage.clear();
+                window.location.reload();
             });
 
             loadProducts();
@@ -160,21 +129,16 @@
                         let html = '';
                         products.forEach(p => {
                             html += `
-                                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="product-item bg-white rounded shadow-sm h-100">
                                         <div class="text-center p-4">
-                                            <div class="d-inline-block border border-primary rounded-pill px-3 mb-3">₹${p.price}</div>
+                                            <div class="text-primary fw-bold mb-2">₹${p.price}</div>
                                             <h3 class="mb-3">${p.name}</h3>
-                                            <p>Available Quantity: ${p.quantity}</p>
+                                            <p class="small text-muted">Stock: ${p.quantity}</p>
                                         </div>
-                                        <div class="position-relative mt-auto">
-                                            <img class="img-fluid" src="${p.image}" alt="${p.name}">
-                                            <div class="product-overlay">
-                                                <div class="d-flex align-items-center justify-content-center h-100">
-                                                    <input type="number" value="1" min="1" max="${p.quantity}" class="form-control w-25 me-2 qty-input" id="qty-${p.id}">
-                                                    <button class="btn btn-primary add-to-cart" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
-                                                </div>
-                                            </div>
+                                        <img class="img-fluid w-100" src="${p.image}">
+                                        <div class="p-4 text-center">
+                                            <button class="btn btn-primary add-to-cart" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
                                         </div>
                                     </div>
                                 </div>`;
@@ -184,92 +148,75 @@
             }
 
             $(document).on('click', '.add-to-cart', function() {
-                const id = $(this).data('id');
-                const name = $(this).data('name');
-                const price = $(this).data('price');
-                const qty = parseInt($(`#qty-${id}`).val());
-
-                const existing = cart.find(item => item.id === id);
-                if (existing) {
-                    existing.quantity += qty;
-                } else {
-                    cart.push({ id, name, price, quantity: qty });
-                }
+                const id = $(this).data('id'), name = $(this).data('name'), price = $(this).data('price');
+                const existing = cart.find(i => i.id === id);
+                if (existing) existing.quantity++; else cart.push({id, name, price, quantity: 1});
                 updateCart();
-                alert('Added to cart!');
             });
 
             function updateCart() {
                 $('#cartCount').text(cart.length);
-                let html = '';
-                let total = 0;
-                cart.forEach((item, index) => {
-                    const subtotal = item.price * item.quantity;
-                    total += subtotal;
-                    html += `
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>${item.name} x ${item.quantity}</span>
-                            <span>₹${subtotal} <button class="btn btn-sm text-danger remove-item" data-index="${index}">&times;</button></span>
-                        </div>`;
+                let html = '', total = 0;
+                cart.forEach(item => {
+                    const sub = item.price * item.quantity;
+                    total += sub;
+                    html += `<div class="d-flex justify-content-between text-dark"><span>${item.name} x ${item.quantity}</span><span>₹${sub}</span></div>`;
                 });
-                $('#cartItems').html(html || '<p>Cart is empty</p>');
-                $('#cartTotal').text(`Total: ₹${total}`);
+                $('#cartItems').html(html || 'Cart is empty');
+                $('#cartTotal').text('Total: ₹' + total);
             }
-
-            $(document).on('click', '.remove-item', function() {
-                cart.splice($(this).data('index'), 1);
-                updateCart();
-            });
 
             $('#orderForm').submit(function(e) {
                 e.preventDefault();
-                if (cart.length === 0) return alert('Cart is empty');
+                $('#checkoutSection').hide();
+                $('#paymentSection').show();
+                let timeLeft = 10;
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    $('#timer').text(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        completeOrder();
+                    }
+                }, 1000);
+            });
 
-                const order = {
+            function completeOrder() {
+                const orderData = {
+                    user_id: user.id,
                     customer_name: $('#custName').val(),
                     customer_email: $('#custEmail').val(),
-                    address: $('#custAddress').val(),
+                    customer_address: $('#custAddress').val(),
                     items: cart,
-                    total_cost: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+                    total_cost: cart.reduce((s, i) => s + (i.price * i.quantity), 0)
                 };
-
                 fetch('http://127.0.0.1:8080/api/orders', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(order)
-                }).then(res => res.json())
-                .then(data => {
-                    alert(data.message);
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(orderData)
+                }).then(() => {
+                    alert('Payment Successful! Order Placed.');
                     cart = [];
                     updateCart();
-                    $('#cartModal').modal('hide');
+                    location.reload();
                 });
-            });
+            }
 
-            $('#checkStatusBtn').click(function() {
-                const email = $('#checkEmail').val();
-                if (!email) return;
-
-                fetch('http://127.0.0.1:8080/api/admin/orders') // In real app, use user-specific endpoint
+            function loadUserOrders() {
+                fetch('http://127.0.0.1:8080/api/user/orders/' + user.id)
                     .then(res => res.json())
                     .then(orders => {
-                        const myOrders = orders.filter(o => o.email === email);
                         let html = '';
-                        myOrders.forEach(o => {
-                            html += `
-                                <div class="border p-3 mb-2 rounded">
-                                    <div class="d-flex justify-content-between">
-                                        <strong>Order #${o.id}</strong>
-                                        <span class="badge bg-primary">${o.status}</span>
-                                    </div>
-                                    <div class="mt-2 text-muted small">
-                                        Admin Message: ${o.message || 'Waiting for update...'}
-                                    </div>
-                                </div>`;
+                        orders.forEach(o => {
+                            html += `<div class="border-bottom p-3">
+                                <strong>Order #${o.id}</strong> - ₹${o.total_cost} 
+                                <span class="badge bg-info ms-2">${o.status}</span>
+                                <div class="small text-muted mt-1">Update: ${o.admin_message || 'Processing...'}</div>
+                            </div>`;
                         });
-                        $('#orderStatusList').html(html || '<p class="text-center">No orders found for this email.</p>');
+                        $('#orderStatusList').html(html || 'No orders yet.');
                     });
-            });
+            }
         });
     </script>
 </body>
