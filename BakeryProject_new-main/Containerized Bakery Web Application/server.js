@@ -63,6 +63,14 @@ const server = http.createServer((req, res) => {
                 if (!ok) return res.end(JSON.stringify({status:'error', message:'Invalid password'}));
                 res.end(JSON.stringify({status:'ok', user: {id: rows[0].id, username: rows[0].username, role: rows[0].role}}));
             }
+            else if (url === '/api/employee/login' && method === 'POST') {
+                const { email, password } = JSON.parse(body);
+                const [rows] = await pool.query('SELECT id, username, password_hash, role FROM users WHERE email = ?', [email]);
+                if (rows.length === 0) return res.end(JSON.stringify({status:'error', message:'Employee not found'}));
+                const ok = await bcrypt.compare(password, rows[0].password_hash);
+                if (!ok) return res.end(JSON.stringify({status:'error', message:'Invalid password'}));
+                res.end(JSON.stringify({status:'ok', user: {id: rows[0].id, username: rows[0].username, role: rows[0].role}}));
+            }
             else if (url === '/api/admin/login' && method === 'POST') {
                 const { username, password } = JSON.parse(body);
                 const [rows] = await pool.query('SELECT id, username, password_hash, role FROM users WHERE username = ? AND role = "admin"', [username]);
@@ -137,5 +145,5 @@ const server = http.createServer((req, res) => {
     });
 });
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

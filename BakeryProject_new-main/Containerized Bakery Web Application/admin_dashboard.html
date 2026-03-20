@@ -100,7 +100,7 @@
             loadProducts(); loadOrders();
 
             function loadProducts() {
-                fetch('http://127.0.0.1:8080/api/products').then(r => r.json()).then(products => {
+                fetch('http://127.0.0.1:8080/api/admin/products').then(r => r.json()).then(products => {
                     let html = '';
                     products.forEach(p => {
                         html += `<div class="col-md-4"><div class="product-card">
