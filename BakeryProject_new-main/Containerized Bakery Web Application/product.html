@@ -105,6 +105,11 @@
         const user = JSON.parse(localStorage.getItem('user'));
 
         $(document).ready(function() {
+            // Dynamically determine the API base URL based on the current hostname
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://' + window.location.hostname + ':8080' 
+                : 'http://' + window.location.hostname + ':8080';
+
             if (user) {
                 $('#authLink').hide();
                 $('#userNameDisplay').text('Welcome, ' + user.username).show();
@@ -123,7 +128,7 @@
             loadProducts();
 
             function loadProducts() {
-                fetch('http://127.0.0.1:8080/api/products')
+                fetch(`${apiBase}/api/products`)
                     .then(res => res.json())
                     .then(products => {
                         let html = '';
@@ -144,6 +149,10 @@
                                 </div>`;
                         });
                         $('#productsDisplay').html(html);
+                    })
+                    .catch(err => {
+                        console.error('Error loading products:', err);
+                        $('#productsDisplay').html('<p class="text-danger">Error loading products. Please ensure port 8080 is open.</p>');
                     });
             }
 
@@ -190,7 +199,7 @@
                     items: cart,
                     total_cost: cart.reduce((s, i) => s + (i.price * i.quantity), 0)
                 };
-                fetch('http://127.0.0.1:8080/api/orders', {
+                fetch(`${apiBase}/api/orders`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(orderData)
@@ -199,11 +208,15 @@
                     cart = [];
                     updateCart();
                     location.reload();
+                })
+                .catch(err => {
+                    console.error('Order error:', err);
+                    alert('Error placing order. Please check connection.');
                 });
             }
 
             function loadUserOrders() {
-                fetch('http://127.0.0.1:8080/api/user/orders/' + user.id)
+                fetch(`${apiBase}/api/user/orders/${user.id}`)
                     .then(res => res.json())
                     .then(orders => {
                         let html = '';
@@ -215,6 +228,10 @@
                             </div>`;
                         });
                         $('#orderStatusList').html(html || 'No orders yet.');
+                    })
+                    .catch(err => {
+                        console.error('Error loading orders:', err);
+                        $('#orderStatusList').html('<p class="text-danger">Error loading your orders.</p>');
                     });
             }
         });
