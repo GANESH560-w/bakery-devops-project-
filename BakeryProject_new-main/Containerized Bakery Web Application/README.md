@@ -1,176 +1,94 @@
-# 🥖 Pune Bakery - End-to-End Containerized Web Application
+# 🥖 Pune Bakery - Professional Cloud Deployment Guide
 
-A professional, full-stack bakery management system designed with **DevOps best practices**. This project demonstrates a complete lifecycle from local development to **AWS Cloud Deployment** using Docker, EC2, and RDS.
-
----
-
-## 🏗️ System Architecture
-
-The application follows a modern multi-tier architecture, containerized for consistency across environments.
-
-```mermaid
-graph TD
-    subgraph "Client Layer"
-        User((User Browser))
-    end
-
-    subgraph "Application Layer (Docker Host / EC2)"
-        Frontend[Nginx Frontend: Port 80]
-        Backend[Node.js Backend: Port 8080]
-    end
-
-    subgraph "Data Layer (Local Docker / AWS RDS)"
-        DB[(MySQL Database: Port 3306)]
-    end
-
-    User -->|HTTP| Frontend
-    User -->|REST API| Backend
-    Backend -->|SQL| DB
-```
+A complete guide to deploying a containerized bakery application on **AWS (EC2 & RDS)**. Follow these steps sequentially to launch the project from scratch.
 
 ---
 
-## ✨ Core Features
+## 🏗️ Phase 1: AWS RDS Setup (The Database)
+This ensures your data is stored persistently in a managed cloud database.
 
-### 🔐 Security & Authentication
-- **Role-Based Access**: Separate portals for Customers and Employees/Admins.
-- **Secure Hashing**: User passwords are encrypted using `bcryptjs` before storage.
-- **Dynamic API Detection**: Frontend automatically connects to the correct backend IP (Local or Cloud).
+1. **Create RDS Instance**:
+   - Go to **RDS Console** -> **Create Database**.
+   - **Engine**: MySQL 8.0.
+   - **Template**: **Free Tier** (Important).
+   - **Identifier**: `bakery-db`.
+   - **Master Username**: `root`.
+   - **Master Password**: `admin123` (or your preferred password).
+   - **Public Access**: **Yes** (to allow initial schema import).
+   - **Connectivity**: Allow port **3306** in the security group.
 
-### 🛍️ Customer Experience
-- **Product Gallery**: Real-time menu display with pricing in **INR (₹)**.
-- **Shopping Cart**: Seamless add-to-cart and calculation logic.
-- **Dummy Payment Gateway**: Simulated QR Code payment with a 10-second processing delay.
-- **Order Tracking**: Real-time status updates (Baking, Out for Delivery, etc.) visible to customers.
-
-### 🛠️ Admin Capabilities
-- **Inventory Management**: Add, edit, or delete products with **Base64 Image support**.
-- **Order Fulfillment**: View all customer orders and send custom messages/status updates.
-
----
-
-## 📊 Database Schema (ERD)
-
-```mermaid
-erDiagram
-    USERS ||--o{ ORDERS : places
-    PRODUCTS ||--o{ ORDERS : contains
-    
-    USERS {
-        int id PK
-        string username
-        string email UK
-        string password_hash
-        string role "user | admin"
-    }
-    PRODUCTS {
-        int id PK
-        string name
-        decimal price "INR"
-        longtext image "Base64"
-        int quantity
-    }
-    ORDERS {
-        int id PK
-        int user_id FK
-        string customer_name
-        string customer_email
-        text customer_address
-        json items
-        decimal total_cost
-        string status
-        string admin_message
-    }
-```
+2. **Initialize Database Schema**:
+   - Copy the **RDS Endpoint** (e.g., `bakery-db.xyz.us-east-1.rds.amazonaws.com`).
+   - From your local machine (using MySQL Workbench) or EC2 (using `mysql-client`), run:
+     ```bash
+     mysql -h <rds-endpoint> -u root -p
+     # Enter password
+     mysql> CREATE DATABASE bakery_db;
+     mysql> USE bakery_db;
+     mysql> SOURCE path/to/bakery_schema.sql;
+     ```
 
 ---
 
-## 🛠️ Essential Manual Configurations (IMPORTANT)
+## ☁️ Phase 2: AWS EC2 Setup (The Web Server)
+1. **Launch Instance**:
+   - **AMI**: Ubuntu Server (Free Tier).
+   - **Instance Type**: `t2.micro`.
+   - **Security Group (Inbound Rules)**:
+     - **SSH (22)**: From your IP.
+     - **HTTP (80)**: From anywhere (0.0.0.0/0).
+     - **Custom TCP (8080)**: From anywhere (Required for Backend API).
 
-Before running the project, you must check these settings based on your environment.
-
-### 📍 1. Local Database (Docker)
-- **Port Mapping**: Docker uses port **3307** to map the internal MySQL port (3306).
-- **Update `docker-compose.yml`**: Ensure `DB_HOST` in the `backend` service is set to `db` for local execution.
-
-### 🌐 2. AWS RDS Configuration
-- **Endpoint**: Update `DB_HOST` in `docker-compose.yml` with your RDS Endpoint.
-- **Credentials**: Update `DB_USER` and `DB_PASS` in `docker-compose.yml` with your RDS master username and password.
-
----
-
-## 🚀 Getting Started (Local Setup - From Scratch)
-...
-
-### 1. Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
-- [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) (optional, for DB verification).
-
-### 2. Clone the Repository
-```bash
-git clone https://github.com/siddheshsomvanshi1/Bakery_Project_Docker.git
-cd "Bakery_Project_Docker/BakeryProject_new-main/Containerized Bakery Web Application"
-```
-
-### 3. Initialize the Database
-1. Open MySQL Workbench and connect to your local instance (Port 3306).
-2. Execute the script found in: `db/bakery_schema.sql`.
-
-### 4. Configure `docker-compose.yml`
-Open `docker-compose.yml` and ensure the `backend` service is correctly configured:
-- **Local Host**: `DB_HOST: db` (if using Docker database service)
-- **Local Host**: `DB_HOST: 127.0.0.1` (if using local MySQL on port 3306/3307)
-- **Cloud (RDS)**: `DB_HOST: <your-rds-endpoint>`
-
-### 5. Launch the Application
-```bash
-# Clean up any existing containers
-docker-compose down
-
-# Build and start new containers
-docker-compose up --build -d
-```
-
-### 5. Access the App
-- **Frontend**: [http://localhost](http://localhost)
-- **Login/Register**: [http://localhost/employee_login.html](http://localhost/employee_login.html)
-- **Admin Portal**: [http://localhost/admin_login.html](http://localhost/admin_login.html)
-  - **Credentials**: `admin` / `admin123`
+2. **Install Docker & Compose**:
+   ```bash
+   sudo apt update
+   sudo apt install docker.io -y
+   sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+   ```
 
 ---
 
-## ☁️ AWS Cloud Deployment Guide
+## �️ Phase 3: Project Configuration
+Before launching, you must update the configuration to link the components.
 
-### Phase 1: Infrastructure (RDS & EC2)
-1. **RDS (MySQL)**: 
-   - Create a Free Tier instance.
-   - Set **Public Access: Yes** (for initialization).
-   - Initialize with `db/bakery_schema.sql`.
-2. **EC2 (Ubuntu)**:
-   - Launch a `t2.micro` instance.
-   - **Security Group Rules**: Open Ports **80** (HTTP), **8080** (API), and **22** (SSH).
+1. **Clone Repository**:
+   ```bash
+   git clone https://github.com/siddheshsomvanshi1/Bakery_Project_Docker.git
+   cd Bakery_Project_Docker/BakeryProject_new-main/"Containerized Bakery Web Application"
+   ```
 
-### Phase 2: Configuration
-Edit `docker-compose.yml` on the EC2 instance to point to your RDS Endpoint:
-```yaml
-environment:
-  DB_HOST: your-rds-endpoint.amazonaws.com
-  DB_USER: root
-  DB_PASS: yourpassword
-```
-
-### Phase 3: Launch
-```bash
-sudo docker-compose up --build -d
-```
+2. **Update `docker-compose.yml`**:
+   Edit the `backend` environment variables:
+   ```yaml
+   backend:
+     environment:
+       DB_HOST: <YOUR_RDS_ENDPOINT>
+       DB_USER: root
+       DB_PASS: <YOUR_RDS_PASSWORD>
+       DB_NAME: bakery_db
+   ```
 
 ---
 
-## 👨‍💻 Technologies Used
-- **Frontend**: HTML5, CSS3, Bootstrap 5, jQuery.
-- **Backend**: Node.js, Express (Pure HTTP logic).
-- **Database**: MySQL 8.0.
-- **DevOps**: Docker, Docker-Compose, AWS EC2, AWS RDS.
+## 🚀 Phase 4: Final Deployment
+1. **Launch Containers**:
+   ```bash
+   sudo docker-compose up --build -d
+   ```
+
+2. **Verify Access**:
+   - Visit `http://<EC2_PUBLIC_IP>` for the store.
+   - Visit `http://<EC2_PUBLIC_IP>/admin_login.html` for Admin.
+     - **Admin**: `admin` / `admin123`
 
 ---
-*Created by Siddhesh Somvanshi - Professional DevOps Portfolio Project*
+
+## 📊 Troubleshooting Checklist
+- **Connection Refused?** Ensure Port **8080** is open in the EC2 Security Group.
+- **Database Error?** Ensure the RDS Security Group allows Port **3306** from the EC2 instance's Private IP or Security Group.
+- **Frontend not loading products?** Clear browser cache and ensure the dynamic IP detection in the JS files is working.
+
+---
+*Created by Siddhesh Somvanshi - End-to-End DevOps Lifecycle Project*
