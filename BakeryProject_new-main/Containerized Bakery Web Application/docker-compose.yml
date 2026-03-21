@@ -18,9 +18,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_HOST: db
+      DB_HOST: bakery-db.cg38ggqq8x6r.us-east-1.rds.amazonaws.com
       DB_USER: root
-      DB_PASS: root
+      DB_PASS: admin123
       DB_NAME: bakery_db
     depends_on:
       - db
