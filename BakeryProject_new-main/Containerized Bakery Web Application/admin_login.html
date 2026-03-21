@@ -90,12 +90,17 @@
 
     <script>
         $(document).ready(function() {
+            // Dynamically determine the API base URL based on the current hostname
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://' + window.location.hostname + ':8080' 
+                : 'http://' + window.location.hostname + ':8080';
+
             $('#adminLoginForm').on('submit', function(e) {
                 e.preventDefault();
                 const username = $('#username').val();
                 const password = $('#password').val();
 
-                fetch('http://127.0.0.1:8080/api/admin/login', {
+                fetch(`${apiBase}/api/admin/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -111,7 +116,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    $('#loginError').text('Error connecting to server').show();
+                    $('#loginError').text('Error connecting to server. Please ensure port 8080 is open.').show();
                 });
             });
         });
