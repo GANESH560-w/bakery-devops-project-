@@ -108,6 +108,7 @@
 
          $.ajax({
              url: 'http://127.0.0.1:8080/api/contact',
+             url: 'http://' + 13.49.145.177 + ':8082/api/contact',
              type: 'POST',
              contentType: 'application/json',
              data: JSON.stringify(formData),
