@@ -4,7 +4,16 @@
     --secondary: #545454;
     --light: #FDF5EB;
     --dark: #1E1916;
+    --accent: #e51a4b;
 }
+
+.text-accent { color: var(--accent) !important; }
+.bg-accent { background-color: var(--accent) !important; }
+.btn-accent { background-color: var(--accent); color: white; }
+.btn-accent:hover { background-color: #c41640; color: white; }
+
+.text-dark-custom { color: #333 !important; }
+.text-muted-custom { color: #666 !important; }
 
 h4,
 h5,

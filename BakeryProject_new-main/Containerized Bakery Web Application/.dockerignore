@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+backend-java/out
+backend-java/lib
+Dockerfile*
+docker-compose*
+README.md
+READ-ME.txt
+LICENSE.txt
+.git
+.gitignore
+.vscode

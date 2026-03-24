@@ -1,0 +1,15 @@
+{
+  "name": "bakery-backend",
+  "version": "1.0.0",
+  "description": "Mock backend for Bakery Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "mysql2": "^3.9.7"
+  },
+  "author": "",
+  "license": "ISC"
+}

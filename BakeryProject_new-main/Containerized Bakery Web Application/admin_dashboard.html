@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard - Pune Bakery</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/favicon.ico" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .product-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .order-card { border-left: 5px solid #e51a4b; background: #f9f9f9; padding: 15px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0 shadow-sm">
+        <a href="index.html" class="navbar-brand d-flex align-items-center">
+            <h1 class="m-0 text-primary">Baker Admin</h1>
+        </a>
+        <div class="ms-auto">
+            <button id="logoutBtn" class="btn btn-outline-primary">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#products">Products</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders">Orders</button></li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Products -->
+            <div class="tab-pane fade show active" id="products">
+                <div class="d-flex justify-content-between mb-4">
+                    <h3>Manage Products</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">Add Product</button>
+                </div>
+                <div id="productList" class="row"></div>
+            </div>
+
+            <!-- Orders -->
+            <div class="tab-pane fade" id="orders">
+                <h3>Customer Orders</h3>
+                <div id="orderList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="productForm" class="modal-content">
+                <div class="modal-header"><h5>Product Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="hidden" id="pId">
+                    <div class="mb-3"><label>Name</label><input type="text" id="pName" class="form-control" required></div>
+                    <div class="mb-3"><label>Price (INR)</label><input type="number" id="pPrice" class="form-control" required></div>
+                    <div class="mb-3"><label>Quantity</label><input type="number" id="pQty" class="form-control" required></div>
+                    <div class="mb-3">
+                        <label>Image</label>
+                        <input type="file" id="pImageFile" class="form-control" accept="image/*">
+                        <input type="hidden" id="pImageBase64">
+                        <img id="pPreview" src="" style="max-height:100px; display:none;" class="mt-2">
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Save Product</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Status Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="statusForm" class="modal-content">
+                <div class="modal-header"><h5>Update Order</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="hidden" id="oId">
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select id="oStatus" class="form-select">
+                            <option>Pending</option><option>Confirmed</option><option>Baking</option><option>Out for Delivery</option><option>Delivered</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label>Message to Customer</label><textarea id="oMsg" class="form-control"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Status</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Dynamically determine the API base URL based on the current hostname
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://' + window.location.hostname + ':8080' 
+                : 'http://' + window.location.hostname + ':8080';
+
+            if (localStorage.getItem('isAdmin') !== 'true') window.location.href = 'admin_login.html';
+            $('#logoutBtn').click(() => { localStorage.clear(); window.location.href = 'admin_login.html'; });
+
+            loadProducts(); loadOrders();
+
+            function loadProducts() {
+                fetch(`${apiBase}/api/admin/products`).then(r => r.json()).then(products => {
+                    let html = '';
+                    products.forEach(p => {
+                        html += `<div class="col-md-4"><div class="product-card">
+                            <img src="${p.image}" class="img-fluid mb-2" style="height:150px; object-fit:cover; width:100%;">
+                            <h5>${p.name}</h5><p>Price: ₹${p.price} | Qty: ${p.quantity}</p>
+                            <button class="btn btn-sm btn-info edit-p" data-p='${JSON.stringify(p)}'>Edit</button>
+                            <button class="btn btn-sm btn-danger del-p" data-id="${p.id}">Delete</button>
+                        </div></div>`;
+                    });
+                    $('#productList').html(html);
+                }).catch(err => {
+                    console.error("Error loading products:", err);
+                    $('#productList').html('<p class="text-danger">Error loading products from server. Please ensure port 8080 is open.</p>');
+                });
+            }
+
+            function loadOrders() {
+                fetch(`${apiBase}/api/admin/orders`).then(r => r.json()).then(orders => {
+                    let html = '';
+                    orders.forEach(o => {
+                        let items = [];
+                        try {
+                            items = typeof o.items === 'string' ? JSON.parse(o.items) : o.items;
+                        } catch (e) {
+                            console.error("Error parsing items for order", o.id, e);
+                        }
+                        const itemsStr = Array.isArray(items) ? items.map(i => `${i.name} x ${i.quantity}`).join(', ') : 'No items';
+                        html += `<div class="order-card row">
+                            <div class="col-md-8">
+                                <h6>Order #${o.id} - ${o.customer_name}</h6>
+                                <p class="mb-1">Items: ${itemsStr} | Total: ₹${o.total_cost}</p>
+                                <p class="mb-0 small text-muted">Status: ${o.status} | Note: ${o.admin_message || 'None'}</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-primary btn-sm update-o" data-id="${o.id}" data-status="${o.status}" data-msg="${o.admin_message}">Update</button>
+                            </div>
+                        </div>`;
+                    });
+                    $('#orderList').html(html || 'No orders yet.');
+                }).catch(err => {
+                    console.error("Error loading orders:", err);
+                    $('#orderList').html('<p class="text-danger">Error loading orders from server. Please ensure port 8080 is open.</p>');
+                });
+            }
+
+            $('#pImageFile').change(function(e) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { $('#pImageBase64').val(ev.target.result); $('#pPreview').attr('src', ev.target.result).show(); };
+                reader.readAsDataURL(e.target.files[0]);
+            });
+
+            $('#productForm').submit(function(e) {
+                e.preventDefault();
+                const id = $('#pId').val();
+                const data = { name: $('#pName').val(), price: $('#pPrice').val(), quantity: $('#pQty').val(), image: $('#pImageBase64').val() };
+                const method = id ? 'PUT' : 'POST';
+                if (id) data.id = id;
+                fetch(`${apiBase}/api/admin/products`, {
+                    method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+                }).then(() => { $('#productModal').modal('hide'); loadProducts(); });
+            });
+
+            $(document).on('click', '.edit-p', function() {
+                const p = $(this).data('p');
+                $('#pId').val(p.id); $('#pName').val(p.name); $('#pPrice').val(p.price); $('#pQty').val(p.quantity);
+                $('#pImageBase64').val(p.image); $('#pPreview').attr('src', p.image).show();
+                $('#productModal').modal('show');
+            });
+
+            $(document).on('click', '.del-p', function() {
+                if(confirm('Delete product?')) {
+                    fetch(`${apiBase}/api/admin/products`, {
+                        method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: $(this).data('id')})
+                    }).then(() => loadProducts());
+                }
+            });
+
+            $(document).on('click', '.update-o', function() {
+                $('#oId').val($(this).data('id')); $('#oStatus').val($(this).data('status')); $('#oMsg').val($(this).data('msg'));
+                $('#statusModal').modal('show');
+            });
+
+            $('#statusForm').submit(function(e) {
+                e.preventDefault();
+                fetch(`${apiBase}/api/admin/orders`, {
+                    method: 'PUT', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id: $('#oId').val(), status: $('#oStatus').val(), message: $('#oMsg').val()})
+                }).then(() => { $('#statusModal').modal('hide'); loadOrders(); });
+            });
+        });
+    </script>
+</body>
+</html>

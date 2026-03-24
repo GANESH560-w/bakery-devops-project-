@@ -1,347 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Baker - Bakery Website Template</title>
+    <title>Pune Bakery - Our Products</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
-
-    <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"> 
-
-    <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        .cart-badge { position: absolute; top: -5px; right: -10px; padding: 2px 6px; border-radius: 50%; background: #e51a4b; color: white; font-size: 10px; }
+        .product-item img { height: 250px; object-fit: cover; }
+        .payment-qr { max-width: 200px; margin: 20px auto; display: block; border: 10px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    </style>
 </head>
-
 <body>
-    <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-grow text-primary" role="status"></div>
-    </div>
-    <!-- Spinner End -->
-
-
-    <!-- Topbar Start -->
-    <div class="container-fluid top-bar bg-dark text-light px-0 wow fadeIn" data-wow-delay="0.1s">
-        <div class="row gx-0 align-items-center d-none d-lg-flex">
-            <div class="col-lg-6 px-5 text-start">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a class="small text-light" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="small text-light" href="#">Career</a></li>
-                    <li class="breadcrumb-item"><a class="small text-light" href="#">Terms</a></li>
-                    <li class="breadcrumb-item"><a class="small text-light" href="#">Privacy</a></li>
-                </ol>
-            </div>
-            <div class="col-lg-6 px-5 text-end">
-                <small>Follow us:</small>
-                <div class="h-100 d-inline-flex align-items-center">
-                    <a class="btn-lg-square text-primary border-end rounded-0" href=""><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn-lg-square text-primary border-end rounded-0" href=""><i class="fab fa-twitter"></i></a>
-                    <a class="btn-lg-square text-primary border-end rounded-0" href=""><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn-lg-square text-primary pe-0" href=""><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
         <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
-            <h1 class="text-primary m-0">Baker</h1>
+            <h1 class="text-primary m-0">Pune Bakery</h1>
         </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav mx-auto p-4 p-lg-0">
                 <a href="index.html" class="nav-item nav-link">Home</a>
-                <a href="about.html" class="nav-item nav-link">About</a>
-                <a href="service.html" class="nav-item nav-link">Services</a>
                 <a href="product.html" class="nav-item nav-link active">Products</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu m-0">
-                        <a href="team.html" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
-                </div>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="employee_login.html" id="authLink" class="nav-item nav-link">Login / Register</a>
+                <span id="userNameDisplay" class="nav-item nav-link text-primary" style="display:none;"></span>
+                <a href="#" id="logoutBtn" class="nav-item nav-link" style="display:none;">Logout</a>
             </div>
-            <div class=" d-none d-lg-flex">
-                <div class="flex-shrink-0 btn-lg-square border border-light rounded-circle">
-                    <i class="fa fa-phone text-primary"></i>
-                </div>
-                <div class="ps-3">
-                    <small class="text-primary mb-0">Call Us</small>
-                    <p class="text-light fs-5 mb-0">+012 345 6789</p>
-                </div>
+            <div class="d-none d-lg-flex align-items-center">
+                <button type="button" class="btn btn-primary position-relative me-4" data-bs-toggle="modal" data-bs-target="#cartModal">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span id="cartCount" class="cart-badge">0</span>
+                </button>
             </div>
         </div>
     </nav>
-    <!-- Navbar End -->
 
-
-    <!-- Page Header Start -->
-    <div class="container-fluid page-header py-6 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container-fluid page-header py-6">
         <div class="container text-center pt-5 pb-3">
-            <h1 class="display-4 text-white animated slideInDown mb-3">Products</h1>
-            <nav aria-label="breadcrumb animated slideInDown">
-                <ol class="breadcrumb justify-content-center mb-0">
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-primary active" aria-current="page">Products</li>
-                </ol>
-            </nav>
+            <h1 class="display-4 text-white animated slideInDown mb-3">Our Menu</h1>
         </div>
     </div>
-    <!-- Page Header End -->
 
-
-    <!-- Product Start -->
-    <div class="container-xxl bg-light my-6 py-6 pt-0" style="margin: 12rem 0;">
+    <div class="container-xxl bg-light my-6 py-6 pt-0">
         <div class="container">
-            <div class="bg-primary text-light rounded-bottom p-5 my-6 mt-0 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="row g-4 align-items-center">
-                    <div class="col-lg-6">
-                        <h1 class="display-4 text-light mb-0">The Best Bakery In Your City</h1>
-                    </div>
-                    <div class="col-lg-6 text-lg-end">
-                        <div class="d-inline-flex align-items-center text-start">
-                            <i class="fa fa-phone-alt fa-4x flex-shrink-0"></i>
-                            <div class="ms-4">
-                                <p class="fs-5 fw-bold mb-0">Call Us</p>
-                                <p class="fs-1 fw-bold mb-0">+012 345 6789</p>
-                            </div>
-                        </div>
-                    </div>
+            <div id="productsDisplay" class="row g-4 mt-5"></div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Your Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-                <p class="text-primary text-uppercase mb-2">// Bakery Products</p>
-                <h1 class="display-6 mb-4">Explore The Categories Of Our Bakery Products</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill px-3 mb-3">$11 - $99</div>
-                            <h3 class="mb-3">Cake</h3>
-                            <span>Tempor erat elitr rebum at clita dolor diam ipsum sit diam amet diam et eos</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-1.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
+                <div class="modal-body">
+                    <div id="cartItems" class="text-dark"></div>
+                    <div id="cartTotal" class="text-end mt-3 fw-bold text-dark"></div>
+                    <hr>
+                    <div id="checkoutSection" style="display:none;">
+                        <form id="orderForm">
+                            <div class="row g-3">
+                                <div class="col-md-6"><input type="text" id="custName" class="form-control" placeholder="Name" required></div>
+                                <div class="col-md-6"><input type="email" id="custEmail" class="form-control" placeholder="Email" required></div>
+                                <div class="col-12"><textarea id="custAddress" class="form-control" placeholder="Address" required></textarea></div>
+                                <div class="col-12"><button type="submit" class="btn btn-primary w-100">Proceed to Payment</button></div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill pt-1 px-3 mb-3">$11 - $99</div>
-                            <h3 class="mb-3">Bread</h3>
-                            <span>Tempor erat elitr rebum at clita dolor diam ipsum sit diam amet diam et eos</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-2.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
-                            </div>
-                        </div>
+                    <div id="paymentSection" style="display:none;" class="text-center">
+                        <h5 class="text-dark">Scan QR to Pay</h5>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PuneBakeryPayment" class="payment-qr">
+                        <p class="text-muted">Dummy Payment Gateway - Processing in <span id="timer">10</span>s...</p>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill pt-1 px-3 mb-3">$11 - $99</div>
-                            <h4 class="mb-3">Cookies</h4>
-                            <span>Tempor erat elitr rebum at clita dolor diam ipsum sit diam amet diam et eos</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-3.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill px-3 mb-3">$5 - $25</div>
-                            <h3 class="mb-3">Pastry</h3>
-                            <span>Fresh and delicious pastries made daily with premium ingredients</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-1.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill pt-1 px-3 mb-3">$3 - $15</div>
-                            <h3 class="mb-3">Donuts</h3>
-                            <span>Sweet and colorful donuts that will make your day brighter</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-2.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="product-item d-flex flex-column bg-white rounded overflow-hidden h-100">
-                        <div class="text-center p-4">
-                            <div class="d-inline-block border border-primary rounded-pill pt-1 px-3 mb-3">$4 - $20</div>
-                            <h4 class="mb-3">Croissants</h4>
-                            <span>Buttery, flaky, and authentic French-style croissants</span>
-                        </div>
-                        <div class="position-relative mt-auto">
-                            <img class="img-fluid" src="img/product-3.jpg" alt="">
-                            <div class="product-overlay">
-                                <a class="btn btn-lg-square btn-outline-light rounded-circle" href=""><i class="fa fa-eye text-primary"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-primary text-light rounded p-5 my-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="row g-4 align-items-center">
-                    <div class="col-lg-12 text-center">
-                        <h2 class="text-light mb-4">Payment Details</h2>
-                        <p class="fs-5 mb-2"><strong>Bank Account No:</strong> 123456789</p>
-                        <p class="fs-5 mb-0"><strong>IFSC Code:</strong> hdfcwarje1234</p>
+                    <div id="loginPrompt" class="text-center p-4" style="display:none;">
+                        <p class="text-dark">Please <a href="employee_login.html">Login</a> to place an order.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Product End -->
 
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer my-6 mb-0 py-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Office Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Warje, Pune, Maharashtra, India</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-0" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Photo Gallery</h4>
-                    <div class="row g-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-1.jpg" alt="Image">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-2.jpg" alt="Image">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-3.jpg" alt="Image">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-2.jpg" alt="Image">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-3.jpg" alt="Image">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light rounded p-1" src="img/product-1.jpg" alt="Image">
-                        </div>
-                    </div>
-                </div>
+    <!-- Order Status -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 bg-white p-5 rounded shadow">
+                <h4 class="text-center text-dark">Track Your Orders</h4>
+                <div id="orderStatusList" class="mt-4 text-dark"></div>
             </div>
         </div>
     </div>
-    <!-- Footer End -->
 
-
-    <!-- Copyright Start -->
-    <div class="container-fluid copyright text-light py-4 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a href="#">Your Site Name</a>, All Right Reserved.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                    Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-                    <br>Distributed By: <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Copyright End -->
-
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-
-    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/counterup/counterup.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script>
+        let cart = [];
+        const user = JSON.parse(localStorage.getItem('user'));
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+        $(document).ready(function() {
+            // Dynamically determine the API base URL based on the current hostname
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://' + window.location.hostname + ':8080' 
+                : 'http://' + window.location.hostname + ':8080';
+
+            if (user) {
+                $('#authLink').hide();
+                $('#userNameDisplay').text('Welcome, ' + user.username).show();
+                $('#logoutBtn').show();
+                $('#checkoutSection').show();
+                loadUserOrders();
+            } else {
+                $('#loginPrompt').show();
+            }
+
+            $('#logoutBtn').click(function() {
+                localStorage.clear();
+                window.location.reload();
+            });
+
+            loadProducts();
+
+            function loadProducts() {
+                fetch(`${apiBase}/api/products`)
+                    .then(res => res.json())
+                    .then(products => {
+                        let html = '';
+                        products.forEach(p => {
+                            html += `
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="product-item bg-white rounded shadow-sm h-100">
+                                        <div class="text-center p-4">
+                                            <div class="text-primary fw-bold mb-2">₹${p.price}</div>
+                                            <h3 class="mb-3">${p.name}</h3>
+                                            <p class="small text-muted">Stock: ${p.quantity}</p>
+                                        </div>
+                                        <img class="img-fluid w-100" src="${p.image}">
+                                        <div class="p-4 text-center">
+                                            <button class="btn btn-primary add-to-cart" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}">Add to Cart</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                        $('#productsDisplay').html(html);
+                    })
+                    .catch(err => {
+                        console.error('Error loading products:', err);
+                        $('#productsDisplay').html('<p class="text-danger">Error loading products. Please ensure port 8080 is open.</p>');
+                    });
+            }
+
+            $(document).on('click', '.add-to-cart', function() {
+                const id = $(this).data('id'), name = $(this).data('name'), price = $(this).data('price');
+                const existing = cart.find(i => i.id === id);
+                if (existing) existing.quantity++; else cart.push({id, name, price, quantity: 1});
+                updateCart();
+            });
+
+            function updateCart() {
+                $('#cartCount').text(cart.length);
+                let html = '', total = 0;
+                cart.forEach(item => {
+                    const sub = item.price * item.quantity;
+                    total += sub;
+                    html += `<div class="d-flex justify-content-between text-dark"><span>${item.name} x ${item.quantity}</span><span>₹${sub}</span></div>`;
+                });
+                $('#cartItems').html(html || 'Cart is empty');
+                $('#cartTotal').text('Total: ₹' + total);
+            }
+
+            $('#orderForm').submit(function(e) {
+                e.preventDefault();
+                $('#checkoutSection').hide();
+                $('#paymentSection').show();
+                let timeLeft = 10;
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    $('#timer').text(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        completeOrder();
+                    }
+                }, 1000);
+            });
+
+            function completeOrder() {
+                const orderData = {
+                    user_id: user.id,
+                    customer_name: $('#custName').val(),
+                    customer_email: $('#custEmail').val(),
+                    customer_address: $('#custAddress').val(),
+                    items: cart,
+                    total_cost: cart.reduce((s, i) => s + (i.price * i.quantity), 0)
+                };
+                fetch(`${apiBase}/api/orders`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(orderData)
+                }).then(() => {
+                    alert('Payment Successful! Order Placed.');
+                    cart = [];
+                    updateCart();
+                    location.reload();
+                })
+                .catch(err => {
+                    console.error('Order error:', err);
+                    alert('Error placing order. Please check connection.');
+                });
+            }
+
+            function loadUserOrders() {
+                fetch(`${apiBase}/api/user/orders/${user.id}`)
+                    .then(res => res.json())
+                    .then(orders => {
+                        let html = '';
+                        orders.forEach(o => {
+                            html += `<div class="border-bottom p-3">
+                                <strong>Order #${o.id}</strong> - ₹${o.total_cost} 
+                                <span class="badge bg-info ms-2">${o.status}</span>
+                                <div class="small text-muted mt-1">Update: ${o.admin_message || 'Processing...'}</div>
+                            </div>`;
+                        });
+                        $('#orderStatusList').html(html || 'No orders yet.');
+                    })
+                    .catch(err => {
+                        console.error('Error loading orders:', err);
+                        $('#orderStatusList').html('<p class="text-danger">Error loading your orders.</p>');
+                    });
+            }
+        });
+    </script>
 </body>
-
 </html>

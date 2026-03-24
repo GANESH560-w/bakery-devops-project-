@@ -1,3 +1,4 @@
+  =>  Project Name     : Pune Bakery - Authentic Indian Delights
   =>  Template Name    : Baker - Bakery Website Template
 
   =>  Template Link    : https://htmlcodex.com/bakery-website-template

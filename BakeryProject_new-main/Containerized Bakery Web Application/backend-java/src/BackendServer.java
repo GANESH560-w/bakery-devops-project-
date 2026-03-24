@@ -22,6 +22,10 @@ public class BackendServer {
         server.createContext("/api/team", new JsonHandler(() -> DB.teamJson()));
         server.createContext("/api/testimonials", new JsonHandler(() -> DB.testimonialsJson()));
         server.createContext("/api/contact", new ContactHandler());
+        server.createContext("/api/admin/login", new AdminLoginHandler());
+        server.createContext("/api/admin/products", new ProductAdminHandler());
+        server.createContext("/api/orders", new OrderHandler());
+        server.createContext("/api/admin/orders", new AdminOrderHandler());
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         server.setExecutor(executor);
         server.start();
@@ -94,10 +98,149 @@ public class BackendServer {
         }
     }
 
+    static class AdminLoginHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCors(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendError(exchange, 405, "method not allowed");
+                return;
+            }
+            String body = readBody(exchange.getRequestBody());
+            String user = getJsonValue(body, "username");
+            String pass = getJsonValue(body, "password");
+            sendResponse(exchange, DB.adminLogin(user, pass));
+        }
+    }
+
+    static class ProductAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCors(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+            String method = exchange.getRequestMethod();
+            String body = readBody(exchange.getRequestBody());
+            if ("POST".equalsIgnoreCase(method)) {
+                String name = getJsonValue(body, "name");
+                double price = Double.parseDouble(getJsonValue(body, "price"));
+                String image = getJsonValue(body, "image");
+                int quantity = Integer.parseInt(getJsonValue(body, "quantity"));
+                sendResponse(exchange, DB.addProduct(name, price, image, quantity));
+            } else if ("PUT".equalsIgnoreCase(method)) {
+                int id = Integer.parseInt(getJsonValue(body, "id"));
+                String name = getJsonValue(body, "name");
+                double price = Double.parseDouble(getJsonValue(body, "price"));
+                String image = getJsonValue(body, "image");
+                int quantity = Integer.parseInt(getJsonValue(body, "quantity"));
+                sendResponse(exchange, DB.updateProduct(id, name, price, image, quantity));
+            } else if ("DELETE".equalsIgnoreCase(method)) {
+                int id = Integer.parseInt(getJsonValue(body, "id"));
+                sendResponse(exchange, DB.deleteProduct(id));
+            } else if ("GET".equalsIgnoreCase(method)) {
+                sendResponse(exchange, DB.productsJson());
+            } else {
+                sendError(exchange, 405, "method not allowed");
+            }
+        }
+    }
+
+    static class OrderHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCors(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendError(exchange, 405, "method not allowed");
+                return;
+            }
+            String body = readBody(exchange.getRequestBody());
+            String name = getJsonValue(body, "customer_name");
+            String email = getJsonValue(body, "customer_email");
+            String items = getJsonRawValue(body, "items"); // Extract raw JSON array
+            sendResponse(exchange, DB.placeOrder(name, email, items));
+        }
+    }
+
+    static class AdminOrderHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            addCors(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+            String method = exchange.getRequestMethod();
+            if ("GET".equalsIgnoreCase(method)) {
+                sendResponse(exchange, DB.getOrders());
+            } else if ("PUT".equalsIgnoreCase(method)) {
+                String body = readBody(exchange.getRequestBody());
+                int id = Integer.parseInt(getJsonValue(body, "id"));
+                String status = getJsonValue(body, "status");
+                String message = getJsonValue(body, "message");
+                sendResponse(exchange, DB.updateOrder(id, status, message));
+            } else {
+                sendError(exchange, 405, "method not allowed");
+            }
+        }
+    }
+
+    static String getJsonValue(String json, String key) {
+        String pattern = "\"" + key + "\":\"(.*?)\"";
+        java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = r.matcher(json);
+        if (m.find()) return m.group(1);
+        // Try without quotes for numbers
+        pattern = "\"" + key + "\":(\\d+\\.?\\d*)";
+        r = java.util.regex.Pattern.compile(pattern);
+        m = r.matcher(json);
+        if (m.find()) return m.group(1);
+        return "";
+    }
+
+    static String getJsonRawValue(String json, String key) {
+        String pattern = "\"" + key + "\":(\\[.*?\\])";
+        java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = r.matcher(json);
+        if (m.find()) return m.group(1);
+        return "[]";
+    }
+
+    static void sendResponse(HttpExchange exchange, String response) throws IOException {
+        byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+        setJsonHeaders(exchange.getResponseHeaders());
+        exchange.sendResponseHeaders(200, bytes.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(bytes);
+        }
+    }
+
+    static void sendError(HttpExchange exchange, int code, String error) throws IOException {
+        byte[] payload = ("{\"error\":\"" + error + "\"}").getBytes(StandardCharsets.UTF_8);
+        setJsonHeaders(exchange.getResponseHeaders());
+        exchange.sendResponseHeaders(code, payload.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(payload);
+        }
+    }
+
     static void addCors(HttpExchange exchange) {
         Headers headers = exchange.getResponseHeaders();
         headers.set("Access-Control-Allow-Origin", "*");
-        headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+        headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
         headers.set("Access-Control-Allow-Headers", "Content-Type");
     }
 

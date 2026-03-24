@@ -1,8 +1,31 @@
-version: '3.8'
-
 services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: bakery_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: bakery_user
+      MYSQL_PASSWORD: bakery_pass
+    volumes:
+      - ./db/bakery_schema.sql:/docker-entrypoint-initdb.d/bakery_schema.sql
+    ports:
+      - "3307:3306"
+
   backend:
     build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8080:8080"
+    environment:
+      # --- FOR LOCAL SETUP: Set DB_HOST to 'db' ---
+      # --- FOR CLOUD SETUP: Set DB_HOST to your RDS Endpoint ---
+      DB_HOST: bakery-db.cg38ggqq8x6r.us-east-1.rds.amazonaws.com
+      DB_USER: root
+      DB_PASS: admin123
+      DB_NAME: bakery_db
+    depends_on:
+      - db
       context: ./backend-java
       dockerfile: Dockerfile
     environment:
